@@ -54,6 +54,8 @@ int main(int argc, char *argv[]) {
         
         memset(buffer, 0, BUF_SIZE); // Limpia el buffer
 
+        printf("$ >> ");
+
         if (fgets(buffer, BUF_SIZE, stdin) == NULL) { // Lee la entrada estandar y almacena su contenido en el buffer
             break; // Sale si no se puede leer
         }
@@ -77,17 +79,19 @@ int main(int argc, char *argv[]) {
             break;
         }
 
-        while (1) { // Recibe respuesta del servidor
-            memset(buffer, 0, BUF_SIZE); // Limpia el buffer
-            ssize_t bytes = recv(fd, buffer, BUF_SIZE - 1, 0); // Recibe los datos del servidor
-            if (bytes <= 0) { // Valida si hay bytes leidos
+        while (1) {
+            memset(buffer, 0, BUF_SIZE);
+            ssize_t bytes = recv(fd, buffer, BUF_SIZE - 1, 0);
+            if (bytes <= 0) break;
+
+            buffer[bytes] = '\0';
+            if (strstr(buffer, "<EOF>") != NULL) { // Detecta la señal de fin
+                buffer[strstr(buffer, "<EOF>") - buffer] = '\0'; // Trunca en <EOF>
+                printf("%s", buffer);
                 break;
             }
-            buffer[bytes] = '\0'; // Terminar la cadena correctamente
-            printf("%s", buffer); // Muestra el contenido del mensaje recibido
-            if (bytes < BUF_SIZE - 1) { // Sale si no hay más datos recibidos
-                break;
-            }
+
+            printf("%s", buffer);
         }
         printf("\n");
     }

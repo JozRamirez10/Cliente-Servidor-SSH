@@ -99,11 +99,13 @@ void spawn(char *command, char *arg_list[], int client_fd) {
         char buffer[BUF_SIZE]; // Buffer que almacena los datos leídos por el pipe
         ssize_t bytes_read; // Variable para almacenar la cantidad de bytes leídos
         
-        // Lee los datos del extremo de lectura del pipe
         while ((bytes_read = read(pipe_fd[0], buffer, sizeof(buffer) - 1)) > 0) {
-            buffer[bytes_read] = '\0';  // Caracter de fin de cadena
-            send(client_fd, buffer, bytes_read, 0);  // Envía el contenido del buffer(salida del comando) al cliente
+            buffer[bytes_read] = '\0';
+            send(client_fd, buffer, bytes_read, 0);
         }
+
+        // Envía una señal de fin de transmisión
+        send(client_fd, "<EOF>", 5, 0);
 
         close(pipe_fd[0]);  // Cerrar el lado de lectura del pipe
         wait(NULL);         // Esperar a que el proceso hijo termine
