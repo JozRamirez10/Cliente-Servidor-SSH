@@ -3,3 +3,9 @@ servidor
 
 cliente
 ./cliente
+
+temp
+./temp
+
+.vscode
+./.vscode
